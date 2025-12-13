@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "766748516478",
+    "firebase_url": "https://itd-dda-asg1-589ef-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "itd-dda-asg1-589ef",
+    "storage_bucket": "itd-dda-asg1-589ef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766748516478:android:e55d400b93ec18a1bc382f",
+        "android_client_info": {
+          "package_name": "kxbing.itddda.asg1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfkhrFWd1OKZeiX4nLOVn6QvJAgq9A2Hk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
