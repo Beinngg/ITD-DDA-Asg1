@@ -3,34 +3,84 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    public static Inventory I;
+    public static Inventory I { get; private set; }
 
-    private HashSet<string> items = new HashSet<string>();
+    private readonly List<string> items = new List<string>();
+
+    // ✅ 草药上限
+    private const int MAX_HERBS = 2;
 
     private void Awake()
     {
-        if (I != null && I != this) { Destroy(gameObject); return; }
+        if (I != null && I != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         I = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    public bool Has(string itemName) => items.Contains(itemName);
-
-    public void Add(string itemName)
+    /// <summary>
+    /// 尝试加入一个草药
+    /// </summary>
+    public bool Add(string item)
     {
-        items.Add(itemName);
-        Debug.Log($"get：{itemName}");
+        if (items.Count >= MAX_HERBS)
+        {
+            Debug.Log($"[INV] Inventory full ({MAX_HERBS}). Cannot add {item}");
+            return false;
+        }
+
+        items.Add(item);
+        Debug.Log($"[INV] + {item}  ({items.Count}/{MAX_HERBS})");
+        return true;
     }
 
-    public bool Remove(string itemName)
+    public bool Has(string item) => items.Contains(item);
+
+    public bool Remove(string item)
     {
-        bool ok = items.Remove(itemName);
-        if (ok) Debug.Log($"remove：{itemName}");
+        bool ok = items.Remove(item);
+        Debug.Log(ok
+            ? $"[INV] - {item}  ({items.Count}/{MAX_HERBS})"
+            : $"[INV] Remove failed: {item}");
         return ok;
     }
 
-
-    public List<string> GetAllItems()
+    /// <summary>
+    /// 安全移除两种草药（炼丹用）
+    /// </summary>
+    public bool Remove2(string a, string b)
     {
-        return new List<string>(items);
+        if (!Has(a) || !Has(b))
+        {
+            Debug.Log($"[INV] Remove2 failed: need {a} + {b}");
+            return false;
+        }
+
+        Remove(a);
+        Remove(b);
+        return true;
     }
+
+    public List<string> GetAllItems() => new List<string>(items);
+
+    /// <summary>
+    /// 调试用：打印当前草药
+    /// </summary>
+    public void PrintAll()
+    {
+        Debug.Log("[INV] Current: " + string.Join(", ", items));
+    }
+
+    /// <summary>
+    /// 是否已满
+    /// </summary>
+    public bool IsFull() => items.Count >= MAX_HERBS;
+
+    /// <summary>
+    /// 当前数量
+    /// </summary>
+    public int Count => items.Count;
 }

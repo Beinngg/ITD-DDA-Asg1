@@ -671,7 +671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u751F\u59DC "
+  med: "\u751F\u59DC"
 --- !u!65 &4218797663908841565
 BoxCollider:
   m_ObjectHideFlags: 0

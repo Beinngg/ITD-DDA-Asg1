@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomerRandom : MonoBehaviour
@@ -6,101 +7,90 @@ public class CustomerRandom : MonoBehaviour
     public class Case
     {
         [TextArea] public string symptomText;
-        public string correctMedicine; 
+        public string correctMedicine;
     }
 
-    [Header("illness to medicine cases")]
     public Case[] cases;
 
-    [Header("all medicines")]
-    public string[] allMedicines =
-    {
-        "大力补",
-        "龟苓丹",
-        "羚角散",
-        "六味地黄丸",
-        "坏丹"
-    };
 
-    private Case currentCase;
-    private bool hasSpoken = false;
+    private static HashSet<int> usedCases = new HashSet<int>();
+
+    private Case myCase;
+    private bool spoken = false;
+    private bool hasLeft = false;
 
     private void Start()
     {
-        PickNewCase();
+        PickUniqueCase();
     }
 
     public void Interact()
     {
-        
-        if (!hasSpoken)
+        if (hasLeft) return;
+        if (myCase == null) return;
+
+        if (!spoken)
         {
-            hasSpoken = true;
-            Debug.Log($"customer：{currentCase.symptomText}");
+            spoken = true;
+            Debug.Log($"customer: {myCase.symptomText}");
             return;
         }
 
-       
-        TryGiveMedicine();
+        GiveMedicineAndLeave();
     }
 
-    private void TryGiveMedicine()
+    private void GiveMedicineAndLeave()
     {
-        string medicinePlayerHas = GetAnyMedicineFromInventory();
-
-        if (medicinePlayerHas == null)
+        if (CraftingTable.I == null)
         {
-            Debug.Log("U have no medicine to give me!");
+            Debug.LogError("No CraftingTable in scene");
             return;
         }
 
-
-        Inventory.I.Remove(medicinePlayerHas);
-
-
-        if (medicinePlayerHas == currentCase.correctMedicine)
+        if (!CraftingTable.I.TakePill(out string pillName, out GameObject pillObj))
         {
+            Debug.Log("桌子上没有丹药");
+            return;
+        }
+
+        Destroy(pillObj);
+
+        if (pillName == myCase.correctMedicine)
             Debug.Log("thanks! feeling better already.");
-            Disappear();   
-        }
-   
         else
-        {
-            Debug.Log("thats not what I needed...");
-            Disappear();   
-        }
+            Debug.Log("that's not what I needed...");
+
+
+        if (GameEndManager.I != null)
+            GameEndManager.I.NotifyCustomerServed();
+        else
+            Debug.LogWarning("GameEndManager not found in scene!");
+
+        hasLeft = true;
+        Destroy(gameObject);
     }
 
-    private string GetAnyMedicineFromInventory()
-    {
-        foreach (var med in allMedicines)
-        {
-            if (Inventory.I.Has(med))
-                return med;
-        }
-        return null;
-    }
-
-    private void Disappear()
-    {
-       
-        gameObject.SetActive(false);
-
-       
-    }
-
-    private void PickNewCase()
+    private void PickUniqueCase()
     {
         if (cases == null || cases.Length == 0)
         {
-            Debug.LogWarning("CustomerRandom: cases ！");
+            myCase = null;
+            return;
+        }
+ 
+        if (cases.Length == 1)
+        {
+            myCase = cases[0];
             return;
         }
 
         int idx = Random.Range(0, cases.Length);
-        currentCase = cases[idx];
-        hasSpoken = false;
+        int safety = 200;
 
-        Debug.Log("here comes a new customer ");
+        while (usedCases.Contains(idx) && safety-- > 0)
+            idx = Random.Range(0, cases.Length);
+
+        usedCases.Add(idx);
+        myCase = cases[idx];
     }
 }

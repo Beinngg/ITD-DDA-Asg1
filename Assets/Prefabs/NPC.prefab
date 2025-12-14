@@ -340,3 +340,5 @@ MonoBehaviour:
   - "\u9F9F\u82D3\u4E39"
   - "\u7F9A\u89D2\u6563"
   - "\u516D\u5473\u5730\u9EC4\u4E38"
+  craftingTable: {fileID: 7362248825291109139, guid: 37d2e3f886ab8d24b872b415f928d9ac, type: 3}
+  removeWrongMedicineFromInventory: 1

@@ -3,16 +3,28 @@ using UnityEngine;
 
 public class CraftingTable : MonoBehaviour
 {
-    [Header("med Prefabs")]
-    public GameObject vitalityTonicPill_Gold;      
-    public GameObject heatReliefPill_Blue;        
-    public GameObject coldReliefPowder_Red;        
-    public GameObject kidneyNourishPill_Gray;      
-    public GameObject badPillPrefab;              
-    [Header("SPAWN POINT")]
-    public Transform spawnPoint;
+    // ✅ 全局唯一桌子
+    public static CraftingTable I { get; private set; }
 
-    private readonly string[] herbNames = new string[]
+    private void Awake()
+    {
+        I = this;
+    }
+
+    [Header("Medicine Prefabs")]
+    public GameObject vitalityTonicPill_Gold;
+    public GameObject heatReliefPill_Blue;
+    public GameObject coldReliefPowder_Red;
+    public GameObject kidneyNourishPill_Gray;
+    public GameObject badPillPrefab;
+
+    public Transform spawnPoint;
+    public float yOffset = 0.08f;
+
+    private GameObject currentPillObj;
+    private string currentPillName;
+
+    private readonly HashSet<string> herbs = new HashSet<string>
     {
         "人参","黄芪","龟板","夏枯草","水牛角","生姜","熟地黄","山茱萸"
     };
@@ -24,109 +36,71 @@ public class CraftingTable : MonoBehaviour
 
     public void TryCraft()
     {
-  
-        if (Has2("人参","黄芪"))
-        {
-            Consume2("人参","黄芪");
-            Make("大力补", vitalityTonicPill_Gold);
-            return;
-        }
+        if (Inventory.I == null) return;
 
-        if (Has2("龟板","夏枯草"))
-        {
-            Consume2("龟板","夏枯草");
-            Make("龟苓丹", heatReliefPill_Blue);
-            return;
-        }
+        if (TryRecipe("人参","黄芪","大力补", vitalityTonicPill_Gold)) return;
+        if (TryRecipe("龟板","夏枯草","龟苓丹", heatReliefPill_Blue)) return;
+        if (TryRecipe("水牛角","生姜","羚角散", coldReliefPowder_Red)) return;
+        if (TryRecipe("熟地黄","山茱萸","六味地黄丸", kidneyNourishPill_Gray)) return;
 
-        if (Has2("水牛角","生姜"))
-        {
-            Consume2("水牛角","生姜");
-            Make("羚角散", coldReliefPowder_Red);
-            return;
-        }
-
-        if (Has2("熟地黄","山茱萸"))
-        {
-            Consume2("熟地黄","山茱萸");
-            Make("六味地黄丸", kidneyNourishPill_Gray);
-            return;
-        }
-
-      
-        if (TryConsumeAnyTwoHerbs(out string usedA, out string usedB))
-        {
+        if (TryConsumeAnyTwoHerbs())
             Make("坏丹", badPillPrefab);
-            Debug.Log($"fail：{usedA} + {usedB} => 坏丹");
-            return;
-        }
-
-        Debug.Log("you dont have enough herbs to craft anything. ");
+        else
+            Debug.Log("not enough herbs");
     }
 
-    private bool Has2(string a, string b)
-        => Inventory.I.Has(a) && Inventory.I.Has(b);
-
-    private void Consume2(string a, string b)
+    private bool TryRecipe(string a, string b, string name, GameObject prefab)
     {
-        Inventory.I.Remove(a);
-        Inventory.I.Remove(b);
+        if (!Inventory.I.Has(a) || !Inventory.I.Has(b)) return false;
+        Inventory.I.Remove2(a, b);
+        Make(name, prefab);
+        return true;
     }
 
-    private void Make(string medicineName, GameObject prefab)
+    private void Make(string name, GameObject prefab)
     {
-        Inventory.I.Add(medicineName);
-        Spawn(prefab);
-        Debug.Log($"you get：{medicineName}");
+        // ✅ 先清旧丹药
+        ClearTable();
+
+        currentPillName = name;
+        Vector3 pos = (spawnPoint ? spawnPoint.position : transform.position) + Vector3.up * yOffset;
+        currentPillObj = Instantiate(prefab, pos, Quaternion.identity);
+
+        Debug.Log($"[TABLE] Made {name}");
     }
 
-    private void Spawn(GameObject prefab)
-{
-    if (prefab == null)
+    // ✅ 客人专用：从桌子取走丹药
+    public bool TakePill(out string pillName, out GameObject pillObj)
     {
-        Debug.LogWarning("theres no prefab");
-        return;
+        pillName = currentPillName;
+        pillObj = currentPillObj;
+
+        if (pillObj == null || string.IsNullOrEmpty(pillName))
+            return false;
+
+        currentPillName = null;
+        currentPillObj = null;
+
+        return true;
     }
 
-    Vector3 pos = spawnPoint != null
-        ? spawnPoint.position + Vector3.up * 0.08f
-        : transform.position + Vector3.up * 0.08f;
-
-    Quaternion rot = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
-
-    Instantiate(prefab, pos, rot);
-}
-
-
-    private bool TryConsumeAnyTwoHerbs(out string herbA, out string herbB)
+    private void ClearTable()
     {
-        herbA = null;
-        herbB = null;
+        if (currentPillObj != null)
+            Destroy(currentPillObj);
 
-        List<string> all = Inventory.I.GetAllItems();
-        List<string> ownedHerbs = new List<string>();
+        currentPillObj = null;
+        currentPillName = null;
+    }
 
-        foreach (var item in all)
-        {
+    private bool TryConsumeAnyTwoHerbs()
+    {
+        var all = Inventory.I.GetAllItems();
+        var list = all.FindAll(i => herbs.Contains(i));
+        if (list.Count < 2) return false;
 
-            for (int i = 0; i < herbNames.Length; i++)
-            {
-                if (item == herbNames[i])
-                {
-                    ownedHerbs.Add(item);
-                    break;
-                }
-            }
-        }
-
-        if (ownedHerbs.Count < 2) return false;
-
-        herbA = ownedHerbs[0];
-        herbB = ownedHerbs[1];
-
-        Inventory.I.Remove(herbA);
-        Inventory.I.Remove(herbB);
-
+        Inventory.I.Remove(list[0]);
+        Inventory.I.Remove(list[1]);
         return true;
     }
 }
