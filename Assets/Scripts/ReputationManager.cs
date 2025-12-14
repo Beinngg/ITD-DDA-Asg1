@@ -34,11 +34,11 @@ public class ReputationManager : MonoBehaviour
 
         Debug.Log("Loaded userId from PlayerPrefs: " + userId);
 
-        if (string.IsNullOrEmpty(userId))
+       /*if (string.IsNullOrEmpty(userId))
         {
             Debug.LogError("No userId found! Make sure user is logged in.");
             return;
-        }
+        }*/
 
         // Delay activation one frame to make sure UI is ready
         StartCoroutine(ActivateAndLoad());

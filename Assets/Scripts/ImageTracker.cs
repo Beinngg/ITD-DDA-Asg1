@@ -3,84 +3,104 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
-
 public class ImageTracker : MonoBehaviour
 {
-    [SerializeField]
-    private ARTrackedImageManager trackedImageManager;
+    [SerializeField] private ARTrackedImageManager trackedImageManager;
 
-    [SerializeField]
-    private GameObject[] placeablePrefabs;
+    [Header("Placeable Prefabs (must match image names)")]
+    [SerializeField] private GameObject[] placeablePrefabs;
 
-    private Dictionary<string, GameObject> spawnedPrefabs = new Dictionary<string, GameObject>();
+    [Header("Adjust Position Offset (meters, same order as prefabs)")]
+    [SerializeField] private Vector3[] spawnPositions;
 
-    private Dictionary<GameObject, GameObject> spawnedObjects = new Dictionary<GameObject, GameObject>();
+    [Header("Adjust Direction (Euler, same order as prefabs)")]
+    [SerializeField] private Vector3[] spawnRotations;
 
-    private string[] someArray = new string[]{"Image1", "Image2", "Image3"};
+    [Header("Adjust Size (same order as prefabs)")]
+    [SerializeField] private Vector3[] spawnScales;
 
-    private void Start()
+    // imageName -> spawned instance (spawn once, stays)
+    private readonly Dictionary<string, GameObject> spawnedByImage = new Dictionary<string, GameObject>();
+
+    // imageName -> prefab index
+    private readonly Dictionary<string, int> indexByImageName = new Dictionary<string, int>();
+
+    private void Awake()
+    {
+        if (trackedImageManager == null)
+            trackedImageManager = GetComponent<ARTrackedImageManager>();
+
+        indexByImageName.Clear();
+
+        for (int i = 0; i < placeablePrefabs.Length; i++)
+        {
+            if (placeablePrefabs[i] == null) continue;
+
+            // Prefab name MUST match reference image name
+            indexByImageName[placeablePrefabs[i].name] = i;
+        }
+    }
+
+    private void OnEnable()
     {
         if (trackedImageManager != null)
-        {
-            trackedImageManager.trackablesChanged.AddListener(OnImageChanged);
-            SetupPrefabs();
-        }
+            trackedImageManager.trackedImagesChanged += OnImagesChanged;
     }
 
-    void SetupPrefabs()
+    private void OnDisable()
     {
-        foreach (GameObject prefab in placeablePrefabs)
-        {
-            GameObject newPrefab = Instantiate(prefab);
-            newPrefab.name = prefab.name;
-            newPrefab.SetActive(false);
-            spawnedPrefabs.Add(prefab.name, newPrefab);
-            spawnedObjects.Add(newPrefab, prefab);
-        }
+        if (trackedImageManager != null)
+            trackedImageManager.trackedImagesChanged -= OnImagesChanged;
     }
 
-    void OnImageChanged(ARTrackablesChangedEventArgs<ARTrackedImage> eventArgs)
+    private void OnImagesChanged(ARTrackedImagesChangedEventArgs eventArgs)
     {
-        foreach (ARTrackedImage trackedImage in eventArgs.added)
-        {
-            UpdateImage(trackedImage);
-        }
+        foreach (var img in eventArgs.added)
+            TrySpawn(img);
 
-        foreach (ARTrackedImage trackedImage in eventArgs.updated)
-        {
-            UpdateImage(trackedImage);
-        }
+        foreach (var img in eventArgs.updated)
+            TrySpawn(img);
 
-        foreach (KeyValuePair<TrackableId, ARTrackedImage> lostObj in eventArgs.removed)
-        {
-            UpdateImage(lostObj.Value);
-        }
+        // removed → do nothing (object stays)
     }
 
-    void UpdateImage(ARTrackedImage trackedImage)
+    private void TrySpawn(ARTrackedImage trackedImage)
     {
-        if(trackedImage != null)
-        {
-            if (trackedImage.trackingState == TrackingState.Limited || trackedImage.trackingState == TrackingState.None)
-            {
-                //Disable the associated content
-                spawnedPrefabs[trackedImage.referenceImage.name].transform.SetParent(null);
-                spawnedPrefabs[trackedImage.referenceImage.name].SetActive(false);
-            }
-            else if (trackedImage.trackingState == TrackingState.Tracking)
-            {
-                Debug.Log(trackedImage.gameObject.name + " is being tracked.");
-                //Enable the associated content
-                if(spawnedPrefabs[trackedImage.referenceImage.name].transform.parent != trackedImage.transform)
-                {
-                    Debug.Log("Enabling associated content: " + spawnedPrefabs[trackedImage.referenceImage.name].name);
-                    spawnedPrefabs[trackedImage.referenceImage.name].transform.SetParent(trackedImage.transform);
-                    spawnedPrefabs[trackedImage.referenceImage.name].transform.localPosition = spawnedObjects[spawnedPrefabs[trackedImage.referenceImage.name]].transform.localPosition;
-                    spawnedPrefabs[trackedImage.referenceImage.name].transform.localRotation = spawnedObjects[spawnedPrefabs[trackedImage.referenceImage.name]].transform.localRotation;
+        if (trackedImage == null) return;
+        if (trackedImage.trackingState != TrackingState.Tracking) return;
 
-                    spawnedPrefabs[trackedImage.referenceImage.name].SetActive(true);
-                }
-            }
+        string imageName = trackedImage.referenceImage.name;
+
+        // Already spawned → don't move it
+        if (spawnedByImage.ContainsKey(imageName)) return;
+
+        if (!indexByImageName.TryGetValue(imageName, out int index))
+        {
+            Debug.LogWarning($"No prefab found for image '{imageName}'. " +
+                             $"Prefab name must match image name.");
+            return;
         }
+
+        GameObject prefab = placeablePrefabs[index];
+        GameObject instance = Instantiate(prefab);
+        instance.name = prefab.name + "_Spawned";
+
+        // Base pose = image pose
+        instance.transform.position = trackedImage.transform.position;
+        instance.transform.rotation = trackedImage.transform.rotation;
+
+        // Position offset (relative to image orientation)
+        if (index < spawnPositions.Length)
+            instance.transform.position += trackedImage.transform.TransformDirection(spawnPositions[index]);
+
+        // Rotation offset
+        if (index < spawnRotations.Length)
+            instance.transform.rotation *= Quaternion.Euler(spawnRotations[index]);
+
+        // Scale
+        if (index < spawnScales.Length)
+            instance.transform.localScale = spawnScales[index];
+
+        spawnedByImage.Add(imageName, instance);
     }
 }
