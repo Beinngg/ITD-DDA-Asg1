@@ -1,32 +1,28 @@
 using UnityEngine;
 
-public class CabinetDoor : MonoBehaviour, IInteractable
+public class CabinetDoor : MonoBehaviour
 {
    
-    public string 人参;  
+    public string med;  
 
     [Header("UI Prefab")]
     public CabinetUI uiPrefab;
 
     private CabinetUI currentUI;
 
-    /*public void Interact()
+    public void Interact()
     {
         // 防止重复打开 UI
         if (currentUI != null) return;
 
         currentUI = Instantiate(uiPrefab);
-        currentUI.Show(
-            人参,
-            onConfirm: OnConfirm,
-            onBack: OnBack
-        );
-    }*/
+        currentUI.Show(med, OnConfirm, OnBack);}
+
 
     private void OnConfirm()
     {
-        Inventory.I.Add(人参);
-        Debug.Log($"get：{人参}");
+        Inventory.I.Add(med);
+        Debug.Log($"get：{med}");
 
         CloseUI();
     }

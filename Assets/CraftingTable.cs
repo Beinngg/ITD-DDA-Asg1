@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CraftingTable : MonoBehaviour, IInteractable
+public class CraftingTable : MonoBehaviour
 {
     [Header("med Prefabs")]
     public GameObject vitalityTonicPill_Gold;      

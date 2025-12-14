@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CustomerRandom : MonoBehaviour, IInteractable
+public class CustomerRandom : MonoBehaviour
 {
     [System.Serializable]
     public class Case
