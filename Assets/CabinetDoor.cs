@@ -2,42 +2,30 @@ using UnityEngine;
 
 public class CabinetDoor : MonoBehaviour
 {
-   
-    public string med;  
+    public string med;
 
-    [Header("UI Prefab")]
-    public CabinetUI uiPrefab;
-
-    private CabinetUI currentUI;
+    [Header("UI Image (PNG)")]
+    public Sprite uiImage;   // ← drag PNG here
 
     public void Interact()
     {
-        // 防止重复打开 UI
-        if (currentUI != null) return;
+        ShowImage();
+    }
 
-        currentUI = Instantiate(uiPrefab);
-        currentUI.Show(med, OnConfirm, OnBack);}
-
+    private void ShowImage()
+    {
+        // For now just debug – actual display depends on your UI system
+        Debug.Log($"Showing UI image for {med}");
+    }
 
     private void OnConfirm()
     {
         Inventory.I.Add(med);
-        Debug.Log($"get：{med}");
-
-        CloseUI();
+        Debug.Log($"get: {med}");
     }
 
     private void OnBack()
     {
-        CloseUI();
-    }
-
-    private void CloseUI()
-    {
-        if (currentUI != null)
-        {
-            Destroy(currentUI.gameObject);
-            currentUI = null;
-        }
+        Debug.Log("Back pressed");
     }
 }
