@@ -12,7 +12,7 @@ public class CustomerRandom : MonoBehaviour
 
     public Case[] cases;
 
-
+  
     private static HashSet<int> usedCases = new HashSet<int>();
 
     private Case myCase;
@@ -32,7 +32,7 @@ public class CustomerRandom : MonoBehaviour
         if (!spoken)
         {
             spoken = true;
-            Debug.Log($"customer: {myCase.symptomText}");
+            DialogUI.I?.Show($"Customer: {myCase.symptomText}\n(Give me the correct pill.)");
             return;
         }
 
@@ -43,28 +43,24 @@ public class CustomerRandom : MonoBehaviour
     {
         if (CraftingTable.I == null)
         {
-            Debug.LogError("No CraftingTable in scene");
+            DialogUI.I?.Show("No CraftingTable found.");
             return;
         }
 
         if (!CraftingTable.I.TakePill(out string pillName, out GameObject pillObj))
         {
-            Debug.Log("桌子上没有丹药");
+            DialogUI.I?.Show("No pill on the table.");
             return;
         }
 
-        Destroy(pillObj);
+        Destroy(pillObj); 
 
         if (pillName == myCase.correctMedicine)
-            Debug.Log("thanks! feeling better already.");
+            DialogUI.I?.Show("Customer: Thanks! I feel better.");
         else
-            Debug.Log("that's not what I needed...");
+            DialogUI.I?.Show("Customer: That's not what I needed...");
 
-
-        if (GameEndManager.I != null)
-            GameEndManager.I.NotifyCustomerServed();
-        else
-            Debug.LogWarning("GameEndManager not found in scene!");
+        GameEndManager.I?.NotifyCustomerServed();
 
         hasLeft = true;
         Destroy(gameObject);
@@ -75,9 +71,10 @@ public class CustomerRandom : MonoBehaviour
         if (cases == null || cases.Length == 0)
         {
             myCase = null;
+            DialogUI.I?.Show("No illness cases set on this customer.");
             return;
         }
- 
+
         if (cases.Length == 1)
         {
             myCase = cases[0];
@@ -92,5 +89,10 @@ public class CustomerRandom : MonoBehaviour
 
         usedCases.Add(idx);
         myCase = cases[idx];
+    }
+
+    public static void ResetUsedCases()
+    {
+        usedCases.Clear();
     }
 }

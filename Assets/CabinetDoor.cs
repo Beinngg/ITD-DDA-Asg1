@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CabinetDoor : MonoBehaviour
 {
-    [Header("medname to get")]
+    [Header("herb name to get")]
     public string med;
 
     private bool alreadyGiven = false;
@@ -12,34 +12,30 @@ public class CabinetDoor : MonoBehaviour
     {
         if (alreadyGiven)
         {
-            Debug.Log($"you already get：{med}");
+            DialogUI.I?.Show($"You already got: {med}");
             return;
         }
 
         if (Inventory.I == null)
         {
-            Debug.LogError("Inventory not found!");
+            DialogUI.I?.Show("Inventory not found.");
             return;
         }
-
 
         if (Inventory.I.IsFull())
         {
-            Debug.Log("bag is full, cannot get more herbs");
+            DialogUI.I?.Show("Bag is full (2/2). Craft first!");
+            return; 
+        }
+
+        bool added = Inventory.I.Add(med);
+        if (!added)
+        {
+            DialogUI.I?.Show("Bag is full.");
             return;
         }
 
-
-        bool added = Inventory.I.Add(med);
-
-        if (!added)
-        {
-            Debug.Log("Bag is full, cannot get more herbs");
-        }
-
- 
         alreadyGiven = true;
-
-        Debug.Log($"get：{med}");
+        DialogUI.I?.Show($"Got herb: {med}");
     }
 }
