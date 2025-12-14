@@ -9,10 +9,9 @@ public class CraftingTable : MonoBehaviour
     public GameObject coldReliefPowder_Red;        
     public GameObject kidneyNourishPill_Gray;      
     public GameObject badPillPrefab;              
-    [Header("生成位置")]
+    [Header("SPAWN POINT")]
     public Transform spawnPoint;
 
-    // 你所有“药材名”（用于从背包里挑两种来炼坏丹）
     private readonly string[] herbNames = new string[]
     {
         "人参","黄芪","龟板","夏枯草","水牛角","生姜","熟地黄","山茱萸"
@@ -82,18 +81,22 @@ public class CraftingTable : MonoBehaviour
     }
 
     private void Spawn(GameObject prefab)
+{
+    if (prefab == null)
     {
-        if (prefab == null)
-        {
-            Debug.LogWarning("theres no prefab（Inspector 里没拖）");
-            return;
-        }
-
-        Vector3 pos = spawnPoint != null ? spawnPoint.position : (transform.position + new Vector3(0, 0.05f, 0));
-        Quaternion rot = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
-
-        Instantiate(prefab, pos, rot);
+        Debug.LogWarning("theres no prefab");
+        return;
     }
+
+    Vector3 pos = spawnPoint != null
+        ? spawnPoint.position + Vector3.up * 0.08f
+        : transform.position + Vector3.up * 0.08f;
+
+    Quaternion rot = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
+
+    Instantiate(prefab, pos, rot);
+}
+
 
     private bool TryConsumeAnyTwoHerbs(out string herbA, out string herbB)
     {

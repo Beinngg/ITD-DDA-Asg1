@@ -326,7 +326,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13aaf84a9866a964897eed6886c60be6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cases: []
+  cases:
+  - symptomText: I feel weak
+    correctMedicine: "\u5927\u529B\u8865"
+  - symptomText: my nose bleed
+    correctMedicine: "\u9F9F\u82D3\u4E39"
+  - symptomText: Im cold
+    correctMedicine: "\u7F9A\u89D2\u6563"
+  - symptomText: 'I feel tired '
+    correctMedicine: "\u516D\u5473\u5730\u9EC4\u4E38"
   allMedicines:
   - "\u5927\u529B\u8865"
   - "\u9F9F\u82D3\u4E39"

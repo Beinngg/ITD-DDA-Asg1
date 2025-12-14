@@ -6,7 +6,7 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs.Readers;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
-namespace UnityEngine.XR.Templates.AR
+/*namespace UnityEngine.XR.Templates.AR
 {
     /// <summary>
     /// Handles dismissing the object menu when clicking out the UI bounds, and showing the
@@ -609,4 +609,4 @@ namespace UnityEngine.XR.Templates.AR
             }
         }
     }
-}
+}*/

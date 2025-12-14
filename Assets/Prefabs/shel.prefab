@@ -209,8 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
-  uiImage: {fileID: 0}
+  med: "\u6C34\u725B\u89D2"
 --- !u!65 &4306248526597343425
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -441,8 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
-  uiImage: {fileID: 0}
+  med: "\u719F\u5730\u9EC4"
 --- !u!65 &7633850936720494052
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -673,8 +671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
-  uiImage: {fileID: 0}
+  med: "\u751F\u59DC "
 --- !u!65 &4218797663908841565
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1361,8 +1358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
-  uiImage: {fileID: 0}
+  med: "\u9F9F\u677F"
 --- !u!65 &2557353860081690024
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1868,8 +1864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
-  uiImage: {fileID: 0}
+  med: "\u590F\u67AF\u8349"
 --- !u!65 &2922793234324268879
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2209,7 +2204,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   med: "\u4EBA\u53C2"
-  uiImage: {fileID: 21300000, guid: 4fba965178e56f94a931e364949d1f1c, type: 3}
 --- !u!65 &921761901397307355
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2549,7 +2543,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   med: "\u9EC4\u82AA"
-  uiImage: {fileID: 0}
 --- !u!65 &2396541416109997666
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3299,8 +3292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
-  uiImage: {fileID: 0}
+  med: "\u5C71\u8331\u8438"
 --- !u!65 &8628804243948350864
 BoxCollider:
   m_ObjectHideFlags: 0

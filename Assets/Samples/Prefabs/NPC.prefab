@@ -306,10 +306,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cases:
-  - symptomText: 
-    correctMedicine: 
-  - symptomText: 
-    correctMedicine: 
+  - symptomText: I feel weak
+    correctMedicine: "\u5927\u529B\u8865"
+  - symptomText: I nose bleed out of no where
+    correctMedicine: "\u9F9F\u82D3\u4E39"
+  - symptomText: i feel cold
+    correctMedicine: "\u7F9A\u89D2\u6563"
+  - symptomText: Im always tired
+    correctMedicine: "\u516D\u5473\u5730\u9EC4\u4E38"
   allMedicines:
   - "\u5927\u529B\u8865"
   - "\u9F9F\u82D3\u4E39"

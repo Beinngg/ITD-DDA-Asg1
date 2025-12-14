@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
-namespace UnityEngine.XR.Templates.AR
+/*namespace UnityEngine.XR.Templates.AR
 {
     /// <summary>
     /// Onboarding goal to be achieved as part of the <see cref="GoalManager"/>.
@@ -326,3 +326,4 @@ namespace UnityEngine.XR.Templates.AR
         }
     }
 }
+*/

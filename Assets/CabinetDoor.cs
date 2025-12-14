@@ -2,30 +2,24 @@ using UnityEngine;
 
 public class CabinetDoor : MonoBehaviour
 {
+    [Header("medname to get")]
     public string med;
 
-    [Header("UI Image (PNG)")]
-    public Sprite uiImage;   // ← drag PNG here
+    private bool alreadyGiven = false;
 
+    // 被 ARTapInteractor 调用
     public void Interact()
     {
-        ShowImage();
-    }
 
-    private void ShowImage()
-    {
-        // For now just debug – actual display depends on your UI system
-        Debug.Log($"Showing UI image for {med}");
-    }
+        if (alreadyGiven)
+        {
+            Debug.Log($"you already get：{med}");
+            return;
+        }
 
-    private void OnConfirm()
-    {
         Inventory.I.Add(med);
-        Debug.Log($"get: {med}");
-    }
+        alreadyGiven = true;
 
-    private void OnBack()
-    {
-        Debug.Log("Back pressed");
+        Debug.Log($"get：{med}");
     }
 }

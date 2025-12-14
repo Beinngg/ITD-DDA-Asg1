@@ -19,8 +19,8 @@ public class ImageTracker : MonoBehaviour
     [Header("Adjust Size (same order as prefabs)")]
     [SerializeField] private Vector3[] spawnScales;
 
-    // imageName -> spawned instance (spawn once, stays)
-    private readonly Dictionary<string, GameObject> spawnedByImage = new Dictionary<string, GameObject>();
+    // ✅ TrackableId -> spawned instance (one object per tracked physical image)
+    private readonly Dictionary<TrackableId, GameObject> spawnedById = new Dictionary<TrackableId, GameObject>();
 
     // imageName -> prefab index
     private readonly Dictionary<string, int> indexByImageName = new Dictionary<string, int>();
@@ -31,11 +31,9 @@ public class ImageTracker : MonoBehaviour
             trackedImageManager = GetComponent<ARTrackedImageManager>();
 
         indexByImageName.Clear();
-
         for (int i = 0; i < placeablePrefabs.Length; i++)
         {
             if (placeablePrefabs[i] == null) continue;
-
             // Prefab name MUST match reference image name
             indexByImageName[placeablePrefabs[i].name] = i;
         }
@@ -61,7 +59,9 @@ public class ImageTracker : MonoBehaviour
         foreach (var img in eventArgs.updated)
             TrySpawn(img);
 
-        // removed → do nothing (object stays)
+        // removed -> optional: 清理字典记录（不删除生成的物体）
+        foreach (var img in eventArgs.removed)
+            spawnedById.Remove(img.trackableId);
     }
 
     private void TrySpawn(ARTrackedImage trackedImage)
@@ -69,38 +69,41 @@ public class ImageTracker : MonoBehaviour
         if (trackedImage == null) return;
         if (trackedImage.trackingState != TrackingState.Tracking) return;
 
-        string imageName = trackedImage.referenceImage.name;
+        // ✅ 同一张图的不同实体会有不同 trackableId
+        TrackableId id = trackedImage.trackableId;
 
-        // Already spawned → don't move it
-        if (spawnedByImage.ContainsKey(imageName)) return;
+        // Already spawned for this physical image -> don't spawn again
+        if (spawnedById.ContainsKey(id)) return;
+
+        string imageName = trackedImage.referenceImage.name;
 
         if (!indexByImageName.TryGetValue(imageName, out int index))
         {
-            Debug.LogWarning($"No prefab found for image '{imageName}'. " +
-                             $"Prefab name must match image name.");
+            Debug.LogWarning($"No prefab found for image '{imageName}'. Prefab name must match image name.");
             return;
         }
 
         GameObject prefab = placeablePrefabs[index];
-        GameObject instance = Instantiate(prefab);
-        instance.name = prefab.name + "_Spawned";
 
         // Base pose = image pose
-        instance.transform.position = trackedImage.transform.position;
-        instance.transform.rotation = trackedImage.transform.rotation;
+        Vector3 pos = trackedImage.transform.position;
+        Quaternion rot = trackedImage.transform.rotation;
 
         // Position offset (relative to image orientation)
         if (index < spawnPositions.Length)
-            instance.transform.position += trackedImage.transform.TransformDirection(spawnPositions[index]);
+            pos += trackedImage.transform.TransformDirection(spawnPositions[index]);
 
         // Rotation offset
         if (index < spawnRotations.Length)
-            instance.transform.rotation *= Quaternion.Euler(spawnRotations[index]);
+            rot *= Quaternion.Euler(spawnRotations[index]);
+
+        GameObject instance = Instantiate(prefab, pos, rot);
+        instance.name = prefab.name + "_Spawned_" + id;
 
         // Scale
         if (index < spawnScales.Length)
             instance.transform.localScale = spawnScales[index];
 
-        spawnedByImage.Add(imageName, instance);
+        spawnedById.Add(id, instance);
     }
 }

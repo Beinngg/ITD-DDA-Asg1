@@ -6,13 +6,13 @@ public class CustomerRandom : MonoBehaviour
     public class Case
     {
         [TextArea] public string symptomText;
-        public string correctMedicine; // 内部判定用，不展示
+        public string correctMedicine; 
     }
 
-    [Header("病例池（症状 + 正确丹药）")]
+    [Header("illness to medicine cases")]
     public Case[] cases;
 
-    [Header("所有可能的丹药")]
+    [Header("all medicines")]
     public string[] allMedicines =
     {
         "大力补",
@@ -32,16 +32,15 @@ public class CustomerRandom : MonoBehaviour
 
     public void Interact()
     {
-        // 第一次点：只说症状
+        
         if (!hasSpoken)
         {
             hasSpoken = true;
-            Debug.Log($"顾客：{currentCase.symptomText}");
-            Debug.Log("（你需要自己判断要做哪一种丹药）");
+            Debug.Log($"customer：{currentCase.symptomText}");
             return;
         }
 
-        // 第二次点：尝试给药
+       
         TryGiveMedicine();
     }
 
@@ -51,24 +50,24 @@ public class CustomerRandom : MonoBehaviour
 
         if (medicinePlayerHas == null)
         {
-            Debug.Log("顾客：你还没给我药。");
+            Debug.Log("U have no medicine to give me!");
             return;
         }
 
-        // 消耗玩家给的药
+
         Inventory.I.Remove(medicinePlayerHas);
 
-        // ✅ 给对药
+
         if (medicinePlayerHas == currentCase.correctMedicine)
         {
-            Debug.Log("顾客：嗯……好多了，谢谢你！");
-            Disappear();   // 治好后也直接消失
+            Debug.Log("thanks! feeling better already.");
+            Disappear();   
         }
-        // ❌ 给错药
+   
         else
         {
-            Debug.Log("顾客：这个不对！我走了！");
-            Disappear();   // 立刻消失
+            Debug.Log("thats not what I needed...");
+            Disappear();   
         }
     }
 
@@ -84,18 +83,17 @@ public class CustomerRandom : MonoBehaviour
 
     private void Disappear()
     {
-        // 方式一（推荐）：直接隐藏，之后你可以再 SetActive(true) 复用
+       
         gameObject.SetActive(false);
 
-        // 方式二（如果你不复用顾客，直接删）
-        // Destroy(gameObject);
+       
     }
 
     private void PickNewCase()
     {
         if (cases == null || cases.Length == 0)
         {
-            Debug.LogWarning("CustomerRandom: cases 没有设置！");
+            Debug.LogWarning("CustomerRandom: cases ！");
             return;
         }
 
@@ -103,6 +101,6 @@ public class CustomerRandom : MonoBehaviour
         currentCase = cases[idx];
         hasSpoken = false;
 
-        Debug.Log("来了一位新顾客（点击顾客听症状）");
+        Debug.Log("here comes a new customer ");
     }
 }
