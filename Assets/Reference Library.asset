@@ -41,9 +41,9 @@ MonoBehaviour:
       m_GuidLow: 5354823038448761294
       m_GuidHigh: 14168288004788877995
     m_SerializedTextureGuid:
-      m_GuidLow: 230893587157264385
-      m_GuidHigh: 18035422300192398107
-    m_Size: {x: 0.1, y: 0.14950496}
+      m_GuidLow: 5711832206198726714
+      m_GuidHigh: 3206629034198248650
+    m_Size: {x: 0.1, y: 0.06672}
     m_SpecifySize: 1
-    m_Name: Third Object
+    m_Name: shel
     m_Texture: {fileID: 0}
