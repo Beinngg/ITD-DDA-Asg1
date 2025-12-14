@@ -581,27 +581,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trackedImageManager: {fileID: 331264289}
-<<<<<<< HEAD
-  placements:
-  - imageName: 
-    prefab: {fileID: 512642878915218546, guid: 37d2e3f886ab8d24b872b415f928d9ac, type: 3}
-    positionOffset: {x: 0, y: 0, z: 0}
-    rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    scale: {x: 0, y: 0, z: 0}
-  - imageName: Simulated track image
-    prefab: {fileID: 3924946138970713517, guid: dda019b9223ef39498308175b0703d9c, type: 3}
-    positionOffset: {x: 0, y: 0, z: 0}
-    rotationOffsetEuler: {x: 0, y: 0, z: 0}
-    scale: {x: 0, y: 0, z: 0}
-=======
   placeablePrefabs:
   - {fileID: 512642878915218546, guid: 37d2e3f886ab8d24b872b415f928d9ac, type: 3}
   - {fileID: 3924946138970713517, guid: dda019b9223ef39498308175b0703d9c, type: 3}
   - {fileID: 2753625933028190799, guid: db9dc657a099b6940a09498237d7db8a, type: 3}
-<<<<<<< Updated upstream
-=======
->>>>>>> 11d4d36e90e3088ff1f038d6064748ef0db1ce37
->>>>>>> Stashed changes
 --- !u!114 &331264289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1835,7 +1818,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1206281378
 RectTransform:
   m_ObjectHideFlags: 0
