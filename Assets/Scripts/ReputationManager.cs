@@ -4,7 +4,7 @@ using Firebase.Database;
 using Firebase.Extensions;
 using System.Collections;
 
-public class ReputationManager : MonoBehaviour
+/*public class ReputationManager : MonoBehaviour
 {
     public TMP_Text reputationText;       // TMP_Text showing number
     public GameObject reputationLabelPNG; // your "Reputation:" PNG GameObject
@@ -99,4 +99,4 @@ public class ReputationManager : MonoBehaviour
             }
         });
     }
-}
+}*/
