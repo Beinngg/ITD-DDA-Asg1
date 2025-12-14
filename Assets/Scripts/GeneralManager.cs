@@ -9,8 +9,9 @@ public class GeneralManager : MonoBehaviour
 {
     private FirebaseAuth auth;
     private DatabaseReference dbRef;
-    private string userId;
+    public string userId;
 
+    // Input fields
     [Header("Login Inputs")]
     public TMP_InputField loginEmailInput;
     public TMP_InputField loginPasswordInput;
@@ -19,206 +20,193 @@ public class GeneralManager : MonoBehaviour
     public TMP_InputField signupEmailInput;
     public TMP_InputField signupPasswordInput;
 
-    [Header("Panels")]
+    // UI Panels
     public GameObject startPanel;
     public GameObject loginPanel;
     public GameObject signupPanel;
     public GameObject mainPanel;
 
-    [Header("Reputation UI")]
-    public GameObject reputationUIRoot;
-    public TMP_Text reputationText;
-
-    [Header("Extra UI")]
-    public GameObject extraUIParent;
-
-    [Header("Menu Content Parents")]
-    public GameObject[] menuContentParents;
-
-    private int currentMenuIndex = -1; // 🔑 track active menu
+    // Reputation UI
+    public TMP_Text reputationText;      // number only
+    public GameObject reputationLabelPNG; // your "Reputation:" PNG
 
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
 
-        SetInitialUI();
+        // Show only start panel
+        startPanel.SetActive(true);
+        loginPanel.SetActive(false);
+        signupPanel.SetActive(false);
+        mainPanel.SetActive(false);
+
+        // Hide reputation UI until Start is pressed
+        if (reputationText != null)
+            reputationText.gameObject.SetActive(false);
+        if (reputationLabelPNG != null)
+            reputationLabelPNG.SetActive(false);
     }
 
-    /* ================= INITIAL ================= */
-
-    void SetInitialUI()
-    {
-        SafeSet(startPanel, true);
-        SafeSet(loginPanel, false);
-        SafeSet(signupPanel, false);
-        SafeSet(mainPanel, false);
-        SafeSet(reputationUIRoot, false);
-        SafeSet(extraUIParent, false);
-
-        HideAllMenuContent();
-    }
-
-    /* ================= PANEL NAV ================= */
-
+    #region Panel Controls
     public void ShowLoginPanel()
     {
-        SafeSet(startPanel, false);
-        SafeSet(loginPanel, true);
-        SafeSet(signupPanel, false);
+        startPanel.SetActive(false);
+        loginPanel.SetActive(true);
+        signupPanel.SetActive(false);
     }
 
     public void ShowSignupPanel()
     {
-        SafeSet(startPanel, false);
-        SafeSet(signupPanel, true);
-        SafeSet(loginPanel, false);
+        startPanel.SetActive(false);
+        signupPanel.SetActive(true);
+        loginPanel.SetActive(false);
     }
 
     public void BackToStart()
     {
-        SafeSet(startPanel, true);
-        SafeSet(loginPanel, false);
-        SafeSet(signupPanel, false);
-        SafeSet(mainPanel, false);
+        startPanel.SetActive(true);
+        loginPanel.SetActive(false);
+        signupPanel.SetActive(false);
+        mainPanel.SetActive(false);
     }
+    #endregion
 
-    /* ================= AUTH ================= */
-
+    #region Firebase Authentication
     public void Login()
     {
-        auth.SignInWithEmailAndPasswordAsync(
-            loginEmailInput.text,
-            loginPasswordInput.text
-        ).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Debug.LogError(task.Exception);
-                return;
-            }
+        string email = loginEmailInput.text;
+        string password = loginPasswordInput.text;
 
-            OnAuthSuccess(task.Result.User);
-        });
+        auth.SignInWithEmailAndPasswordAsync(email, password)
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("Login failed: " + task.Exception);
+                    return;
+                }
+
+                FirebaseUser user = task.Result.User;
+                userId = user.UserId;
+
+                PlayerPrefs.SetString("userId", userId);
+                PlayerPrefs.Save();
+
+                Debug.Log("Login successful: " + user.Email);
+
+                loginPanel.SetActive(false);
+                mainPanel.SetActive(true);
+
+                InitializeUserData();
+            });
     }
 
     public void Signup()
     {
-        auth.CreateUserWithEmailAndPasswordAsync(
-            signupEmailInput.text,
-            signupPasswordInput.text
-        ).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted || task.IsCanceled)
+        string email = signupEmailInput.text;
+        string password = signupPasswordInput.text;
+
+        auth.CreateUserWithEmailAndPasswordAsync(email, password)
+            .ContinueWithOnMainThread(task =>
             {
-                Debug.LogError(task.Exception);
-                return;
-            }
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("Sign Up Failed: " + task.Exception);
+                    return;
+                }
 
-            OnAuthSuccess(task.Result.User);
-        });
+                FirebaseUser newUser = task.Result.User;
+                userId = newUser.UserId;
+
+                PlayerPrefs.SetString("userId", userId);
+                PlayerPrefs.Save();
+
+                Debug.Log("Sign Up Success! User: " + newUser.Email);
+
+                signupPanel.SetActive(false);
+                mainPanel.SetActive(true);
+
+                InitializeUserData();
+            });
     }
+    #endregion
 
-    void OnAuthSuccess(FirebaseUser user)
-    {
-        userId = user.UserId;
-        PlayerPrefs.SetString("userId", userId);
-        PlayerPrefs.Save();
-
-        SafeSet(loginPanel, false);
-        SafeSet(signupPanel, false);
-        SafeSet(mainPanel, true);
-
-        InitUserData();
-    }
-
-    /* ================= REPUTATION ================= */
-
-    void InitUserData()
+    #region Reputation System
+    private void InitializeUserData()
     {
         dbRef.Child("users").Child(userId).Child("reputation")
             .GetValueAsync().ContinueWithOnMainThread(task =>
             {
                 if (task.IsCompleted && !task.Result.Exists)
+                {
                     dbRef.Child("users").Child(userId).Child("reputation").SetValueAsync(0);
+                }
             });
     }
 
-    void LoadReputation()
+    private void ActivateReputationUI()
+    {
+        if (reputationText != null)
+            reputationText.gameObject.SetActive(true);
+        if (reputationLabelPNG != null)
+            reputationLabelPNG.SetActive(true);
+
+        LoadReputation();
+    }
+
+    private void LoadReputation()
     {
         dbRef.Child("users").Child(userId).Child("reputation")
             .GetValueAsync().ContinueWithOnMainThread(task =>
             {
-                int rep = 0;
-                if (task.Result.Exists)
-                    int.TryParse(task.Result.Value.ToString(), out rep);
+                if (task.IsCompleted)
+                {
+                    int reputation = 0;
+                    if (task.Result.Exists)
+                        int.TryParse(task.Result.Value.ToString(), out reputation);
 
-                reputationText.text = rep.ToString();
+                    if (reputationText != null)
+                        reputationText.text = reputation.ToString();
+                }
+                else
+                {
+                    Debug.LogError("Failed to load reputation: " + task.Exception);
+                }
             });
     }
 
-    /* ================= MENU SYSTEM ================= */
-
-    void HideAllMenuContent()
+    public void AddReputation(int amount)
     {
-        foreach (var panel in menuContentParents)
-            if (panel != null) panel.SetActive(false);
+        dbRef.Child("users").Child(userId).Child("reputation")
+            .GetValueAsync().ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    int current = 0;
+                    if (task.Result.Exists)
+                        int.TryParse(task.Result.Value.ToString(), out current);
 
-        currentMenuIndex = -1;
+                    int newReputation = current + amount;
+                    dbRef.Child("users").Child(userId).Child("reputation").SetValueAsync(newReputation);
+
+                    if (reputationText != null)
+                        reputationText.text = newReputation.ToString();
+                }
+            });
     }
+    #endregion
 
-    public void OpenMenuContent(int index)
-    {
-        if (index < 0 || index >= menuContentParents.Length) return;
-
-        HideAllMenuContent();
-        menuContentParents[index].SetActive(true);
-        currentMenuIndex = index;
-    }
-
-    // 🔥 THIS IS THE FIX
-    public void BackFromMenuContent()
-    {
-        if (currentMenuIndex == -1) return;
-
-        menuContentParents[currentMenuIndex].SetActive(false);
-        currentMenuIndex = -1;
-    }
-
-    /* ================= BUTTON ACTIONS ================= */
-
+    // Called by "Start" button in mainPanel
     public void StartGame()
     {
-        SafeSet(mainPanel, false);
-        SafeSet(reputationUIRoot, true);
-        LoadReputation();
+        // Hide the main panel
+        mainPanel.SetActive(false);
+
+        // Activate reputation UI
+        ActivateReputationUI();
+
+        // Start your AR session here if needed
+        // e.g., arSessionPrefab.SetActive(true);
     }
-
-    public void ToggleExtraUI()
-    {
-        if (extraUIParent == null) return;
-
-        bool state = extraUIParent.activeSelf;
-        extraUIParent.SetActive(!state);
-
-        if (!state)
-            HideAllMenuContent();
-    }
-
-    /* ================= UTIL ================= */
-
-    void SafeSet(GameObject obj, bool state)
-    {
-        if (obj != null) obj.SetActive(state);
-    }
-    public void CloseMenuContentEntirely()
-{
-    // Close all opened content panels
-    HideAllMenuContent();
-
-    // Close the menu container itself
-    if (extraUIParent != null)
-        extraUIParent.SetActive(false);
-}
-
 }
