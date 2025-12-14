@@ -125,11 +125,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fa3cdaacb6cc6f40a15f9b63acc2f98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vitalityTonicPill_Gold: {fileID: 285985284182650632, guid: 61e4b23af688b92489b231dcd0557d12, type: 3}
-  heatReliefPill_Blue: {fileID: 3411740445876710423, guid: 3620f94316a3dca4bb4c015c2323b636, type: 3}
-  coldReliefPowder_Red: {fileID: 7578442142409482991, guid: 671cfb340e761ff4a9345a920101ea68, type: 3}
-  kidneyNourishPill_Gray: {fileID: 213988005796639268, guid: fc1bf83626733414db1f94d0c6170059, type: 3}
-  badPillPrefab: {fileID: 8763147903167613637, guid: 583e788adec00ff41b4d256c46bae88a, type: 3}
+  vitalityTonicPill_Gold: {fileID: 0}
+  heatReliefPill_Blue: {fileID: 0}
+  coldReliefPowder_Red: {fileID: 0}
+  kidneyNourishPill_Gray: {fileID: 0}
+  badPillPrefab: {fileID: 0}
   spawnPoint: {fileID: 889062181320021704}
 --- !u!4 &889062181320021704 stripped
 Transform:
