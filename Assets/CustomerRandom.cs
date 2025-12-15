@@ -7,12 +7,11 @@ public class CustomerRandom : MonoBehaviour
     public class Case
     {
         [TextArea] public string symptomText;
-        public string correctMedicine;
+        public string correctMedicine; // Must match CraftingTable's medName exactly
     }
 
     public Case[] cases;
 
-  
     private static HashSet<int> usedCases = new HashSet<int>();
 
     private Case myCase;
@@ -26,8 +25,7 @@ public class CustomerRandom : MonoBehaviour
 
     public void Interact()
     {
-        if (hasLeft) return;
-        if (myCase == null) return;
+        if (hasLeft || myCase == null) return;
 
         if (!spoken)
         {
@@ -53,7 +51,7 @@ public class CustomerRandom : MonoBehaviour
             return;
         }
 
-        Destroy(pillObj); 
+        Destroy(pillObj);
 
         if (pillName == myCase.correctMedicine)
             DialogUI.I?.Show("Customer: Thanks! I feel better.");

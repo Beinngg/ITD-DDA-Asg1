@@ -42,8 +42,9 @@ public class GameEndManager : MonoBehaviour
         if (endingCanvas != null)
             endingCanvas.Show();
 
-        Time.timeScale = 0f;
-
-  
+        // 🔥 Add reputation safely
+        var gm = FindObjectOfType<GeneralManager>();
+        if (gm != null)
+            gm.AddReputation(10);
     }
 }

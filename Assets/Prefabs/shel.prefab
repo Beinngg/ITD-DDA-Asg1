@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: 815d87ea14b8f0a43885b69806d10bb2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u6C34\u725B\u89D2"
+  med: Water Buffalo Horn
 --- !u!65 &4306248526597343425
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -440,7 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u719F\u5730\u9EC4"
+  med: Prepared Rehmannia Root
 --- !u!65 &7633850936720494052
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -527,7 +527,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: 81ba8fe982014f54ca743289713d65de, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u751F\u59DC"
+  med: Fresh Ginger Rhizome
 --- !u!65 &4218797663908841565
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1358,7 +1358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u9F9F\u677F"
+  med: Tortoise Plastron
 --- !u!65 &2557353860081690024
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1633,7 +1633,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: da80e6160653eca4aabf509f93e95987, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1864,7 +1864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u590F\u67AF\u8349"
+  med: Selfheal Spike
 --- !u!65 &2922793234324268879
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1951,7 +1951,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: 2a827e0e6bb4a5a4c859f012db8d1dac, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2203,7 +2203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u4EBA\u53C2"
+  med: Ginseng Root
 --- !u!65 &921761901397307355
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2290,7 +2290,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: 6bfb3a6346b3d4e48a568865775a9d43, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2542,7 +2542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u9EC4\u82AA"
+  med: Astragalus Root
 --- !u!65 &2396541416109997666
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2629,7 +2629,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: 76760dda8189ede4e8c5ae79fcb44d1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2845,7 +2845,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: 0ad9f2ee5e4275347be5924a80f5b151, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2953,7 +2953,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fad721e3903eedb4490e9aa9b8abc57f, type: 2}
+  - {fileID: 2100000, guid: ccfbc78c1e4ef9b479796ae41780b476, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3292,7 +3292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbc687128266e724089304849e1199b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  med: "\u5C71\u8331\u8438"
+  med: Cornelian Cherry Fruit
 --- !u!65 &8628804243948350864
 BoxCollider:
   m_ObjectHideFlags: 0

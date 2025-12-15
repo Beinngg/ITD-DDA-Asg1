@@ -328,17 +328,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cases:
   - symptomText: I feel weak
-    correctMedicine: "\u5927\u529B\u8865"
+    correctMedicine: Vitality Tonic
   - symptomText: my nose bleed
-    correctMedicine: "\u9F9F\u82D3\u4E39"
+    correctMedicine: Heat Relief Pill
   - symptomText: Im cold
-    correctMedicine: "\u7F9A\u89D2\u6563"
+    correctMedicine: Cold Relief Pill
   - symptomText: 'I feel tired '
-    correctMedicine: "\u516D\u5473\u5730\u9EC4\u4E38"
-  allMedicines:
-  - "\u5927\u529B\u8865"
-  - "\u9F9F\u82D3\u4E39"
-  - "\u7F9A\u89D2\u6563"
-  - "\u516D\u5473\u5730\u9EC4\u4E38"
-  craftingTable: {fileID: 7362248825291109139, guid: 37d2e3f886ab8d24b872b415f928d9ac, type: 3}
-  removeWrongMedicineFromInventory: 1
+    correctMedicine: Kidney Nourishing Pill

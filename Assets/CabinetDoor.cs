@@ -2,11 +2,10 @@ using UnityEngine;
 
 public class CabinetDoor : MonoBehaviour
 {
-    [Header("herb name to get")]
-    public string med;
+    [Header("Herb name to get (must match CraftingTable)")]
+    public string med; // Example: "Ginseng Root", "Astragalus Root", etc.
 
     private bool alreadyGiven = false;
-
 
     public void Interact()
     {

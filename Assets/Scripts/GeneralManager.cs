@@ -35,7 +35,11 @@ public class GeneralManager : MonoBehaviour
     [Header("Menu Content Parents")]
     public GameObject[] menuContentParents;
 
-    private int currentMenuIndex = -1; // 🔑 track active menu
+    [Header("Error Messages")]
+    public TMP_Text loginErrorText;
+    public TMP_Text signupErrorText;
+
+    private int currentMenuIndex = -1;
 
     void Start()
     {
@@ -44,8 +48,6 @@ public class GeneralManager : MonoBehaviour
 
         SetInitialUI();
     }
-
-    /* ================= INITIAL ================= */
 
     void SetInitialUI()
     {
@@ -59,13 +61,12 @@ public class GeneralManager : MonoBehaviour
         HideAllMenuContent();
     }
 
-    /* ================= PANEL NAV ================= */
-
     public void ShowLoginPanel()
     {
         SafeSet(startPanel, false);
         SafeSet(loginPanel, true);
         SafeSet(signupPanel, false);
+        loginErrorText.text = "";
     }
 
     public void ShowSignupPanel()
@@ -73,6 +74,7 @@ public class GeneralManager : MonoBehaviour
         SafeSet(startPanel, false);
         SafeSet(signupPanel, true);
         SafeSet(loginPanel, false);
+        signupErrorText.text = "";
     }
 
     public void BackToStart()
@@ -83,40 +85,40 @@ public class GeneralManager : MonoBehaviour
         SafeSet(mainPanel, false);
     }
 
-    /* ================= AUTH ================= */
-
     public void Login()
     {
-        auth.SignInWithEmailAndPasswordAsync(
-            loginEmailInput.text,
-            loginPasswordInput.text
-        ).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Debug.LogError(task.Exception);
-                return;
-            }
+        loginErrorText.text = "";
 
-            OnAuthSuccess(task.Result.User);
-        });
+        auth.SignInWithEmailAndPasswordAsync(loginEmailInput.text, loginPasswordInput.text)
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    loginErrorText.text = ParseAuthError(task.Exception, true);
+                    Debug.LogError("Login failed: " + task.Exception);
+                    return;
+                }
+
+                OnAuthSuccess(task.Result.User);
+            });
     }
 
     public void Signup()
     {
-        auth.CreateUserWithEmailAndPasswordAsync(
-            signupEmailInput.text,
-            signupPasswordInput.text
-        ).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Debug.LogError(task.Exception);
-                return;
-            }
+        signupErrorText.text = "";
 
-            OnAuthSuccess(task.Result.User);
-        });
+        auth.CreateUserWithEmailAndPasswordAsync(signupEmailInput.text, signupPasswordInput.text)
+            .ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCanceled || task.IsFaulted)
+                {
+                    signupErrorText.text = ParseAuthError(task.Exception, false);
+                    Debug.LogError("Signup failed: " + task.Exception);
+                    return;
+                }
+
+                OnAuthSuccess(task.Result.User);
+            });
     }
 
     void OnAuthSuccess(FirebaseUser user)
@@ -130,9 +132,8 @@ public class GeneralManager : MonoBehaviour
         SafeSet(mainPanel, true);
 
         InitUserData();
+        LoadReputation();
     }
-
-    /* ================= REPUTATION ================= */
 
     void InitUserData()
     {
@@ -144,7 +145,7 @@ public class GeneralManager : MonoBehaviour
             });
     }
 
-    void LoadReputation()
+    public void LoadReputation()
     {
         dbRef.Child("users").Child(userId).Child("reputation")
             .GetValueAsync().ContinueWithOnMainThread(task =>
@@ -157,7 +158,35 @@ public class GeneralManager : MonoBehaviour
             });
     }
 
-    /* ================= MENU SYSTEM ================= */
+    public void AddReputation(int amount)
+    {
+        if (string.IsNullOrEmpty(userId)) return;
+
+        DatabaseReference repRef = dbRef.Child("users").Child(userId).Child("reputation");
+
+        repRef.RunTransaction(mutableData =>
+        {
+            int currentRep = 0;
+
+            if (mutableData.Value != null)
+                int.TryParse(mutableData.Value.ToString(), out currentRep);
+
+            mutableData.Value = currentRep + amount;
+            return TransactionResult.Success(mutableData);
+
+        }).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCompleted)
+            {
+                LoadReputation();
+                Debug.Log($"+{amount} Reputation added");
+            }
+            else
+            {
+                Debug.LogError("Failed to add reputation");
+            }
+        });
+    }
 
     void HideAllMenuContent()
     {
@@ -171,12 +200,15 @@ public class GeneralManager : MonoBehaviour
     {
         if (index < 0 || index >= menuContentParents.Length) return;
 
+        // Ensure parent is active
+        if (extraUIParent != null && !extraUIParent.activeSelf)
+            extraUIParent.SetActive(true);
+
         HideAllMenuContent();
         menuContentParents[index].SetActive(true);
         currentMenuIndex = index;
     }
 
-    // 🔥 THIS IS THE FIX
     public void BackFromMenuContent()
     {
         if (currentMenuIndex == -1) return;
@@ -184,8 +216,6 @@ public class GeneralManager : MonoBehaviour
         menuContentParents[currentMenuIndex].SetActive(false);
         currentMenuIndex = -1;
     }
-
-    /* ================= BUTTON ACTIONS ================= */
 
     public void StartGame()
     {
@@ -201,24 +231,46 @@ public class GeneralManager : MonoBehaviour
         bool state = extraUIParent.activeSelf;
         extraUIParent.SetActive(!state);
 
-        if (!state)
+        // Only hide menu content when closing
+        if (state)
             HideAllMenuContent();
     }
 
-    /* ================= UTIL ================= */
+    public void CloseMenuContentEntirely()
+    {
+        HideAllMenuContent();
+        if (extraUIParent != null)
+            extraUIParent.SetActive(false);
+    }
 
     void SafeSet(GameObject obj, bool state)
     {
         if (obj != null) obj.SetActive(state);
     }
-    public void CloseMenuContentEntirely()
-{
-    // Close all opened content panels
-    HideAllMenuContent();
 
-    // Close the menu container itself
-    if (extraUIParent != null)
-        extraUIParent.SetActive(false);
-}
+    private string ParseAuthError(AggregateException exception, bool isLogin)
+    {
+        if (exception == null || exception.InnerExceptions == null || exception.InnerExceptions.Count == 0)
+            return isLogin ? "Login failed. Try again." : "Signup failed. Try again.";
 
+        foreach (var e in exception.InnerExceptions)
+        {
+            string msg = e.Message.ToLower();
+
+            if (msg.Contains("invalid-email"))
+                return "Email format is invalid.";
+            if (msg.Contains("user-not-found") && isLogin)
+                return "No account found with this email.";
+            if (msg.Contains("wrong-password") && isLogin)
+                return "Password is incorrect.";
+            if (msg.Contains("email-already-in-use") && !isLogin)
+                return "This email is already registered.";
+            if (msg.Contains("weak-password") && !isLogin)
+                return "Password too weak (min 6 characters).";
+            if (msg.Contains("network-request-failed"))
+                return "Network error. Please try again.";
+        }
+
+        return isLogin ? "Login failed. Try again." : "Signup failed. Try again.";
+    }
 }

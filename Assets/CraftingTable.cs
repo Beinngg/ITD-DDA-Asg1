@@ -11,11 +11,11 @@ public class CraftingTable : MonoBehaviour
     }
 
     [Header("Medicine Prefabs")]
-    public GameObject vitalityTonicPill_Gold; 
-    public GameObject heatReliefPill_Blue;    
-    public GameObject coldReliefPowder_Red;    
-    public GameObject kidneyNourishPill_Gray;   
-    public GameObject badPillPrefab;      
+    public GameObject vitalityTonicPill_Gold;   // Vitality Tonic Pill
+    public GameObject heatReliefPill_Blue;      // Heat Relief Herbal Pill
+    public GameObject coldReliefPowder_Red;     // Cold Relief Herbal Powder
+    public GameObject kidneyNourishPill_Gray;   // Kidney Nourishing Herbal Pill
+    public GameObject badPillPrefab;            // Bad Pill
 
     [Header("Spawn")]
     public Transform spawnPoint;
@@ -24,9 +24,17 @@ public class CraftingTable : MonoBehaviour
     private GameObject currentPillObj;
     private string currentPillName;
 
+    // Herbs in English
     private readonly HashSet<string> herbSet = new HashSet<string>
     {
-        "人参","黄芪","龟板","夏枯草","水牛角","生姜","熟地黄","山茱萸"
+        "Ginseng Root",
+        "Astragalus Root",
+        "Tortoise Plastron",
+        "Selfheal Spike",
+        "Water Buffalo Horn",
+        "Fresh Ginger Rhizome",
+        "Prepared Rehmannia Root",
+        "Cornelian Cherry Fruit"
     };
 
     public void Interact() => TryCraft();
@@ -39,17 +47,17 @@ public class CraftingTable : MonoBehaviour
             return;
         }
 
-  
-        if (TryRecipe("人参","黄芪","大力补", vitalityTonicPill_Gold)) return;
-        if (TryRecipe("龟板","夏枯草","龟苓丹", heatReliefPill_Blue)) return;
-        if (TryRecipe("水牛角","生姜","羚角散", coldReliefPowder_Red)) return;
-        if (TryRecipe("熟地黄","山茱萸","六味地黄丸", kidneyNourishPill_Gray)) return;
+        // Recipes using the English names
+        if (TryRecipe("Ginseng Root", "Astragalus Root", "Vitality Tonic Pill", vitalityTonicPill_Gold)) return;
+        if (TryRecipe("Tortoise Plastron", "Selfheal Spike", "Heat Relief Herbal Pill", heatReliefPill_Blue)) return;
+        if (TryRecipe("Water Buffalo Horn", "Fresh Ginger Rhizome", "Cold Relief Herbal Powder", coldReliefPowder_Red)) return;
+        if (TryRecipe("Prepared Rehmannia Root", "Cornelian Cherry Fruit", "Kidney Nourishing Herbal Pill", kidneyNourishPill_Gray)) return;
 
-        // 否则做坏丹（吃任意两味草药）
+        // If any two herbs but no valid recipe → bad pill
         if (TryConsumeAnyTwoHerbs(out string a, out string b))
         {
-            Make("坏丹", badPillPrefab);
-            DialogUI.I?.Show($"Craft failed: {a} + {b} -> 坏丹");
+            Make("Bad Pill", badPillPrefab);
+            DialogUI.I?.Show($"Craft failed: {a} + {b} -> Bad Pill");
             return;
         }
 
@@ -68,8 +76,8 @@ public class CraftingTable : MonoBehaviour
 
     private void Make(string medName, GameObject prefab)
     {
-        ClearTable();             
-        currentPillName = medName; 
+        ClearTable();
+        currentPillName = medName;
 
         if (prefab == null)
         {
@@ -83,17 +91,16 @@ public class CraftingTable : MonoBehaviour
         currentPillObj = Instantiate(prefab, pos, Quaternion.identity);
     }
 
-
     public bool TakePill(out string pillName, out GameObject pillObj)
     {
         pillName = currentPillName;
-        pillObj  = currentPillObj;
+        pillObj = currentPillObj;
 
         if (pillObj == null || string.IsNullOrEmpty(pillName))
             return false;
 
         currentPillName = null;
-        currentPillObj  = null;
+        currentPillObj = null;
         return true;
     }
 
